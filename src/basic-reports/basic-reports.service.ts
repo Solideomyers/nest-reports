@@ -7,6 +7,7 @@ import {
 import { PrismaClient } from '@prisma/client';
 import { PrinterService } from 'src/printer/printer.service';
 import {
+  getCountriesReport,
   getEmploymentLetterByIdReport,
   getEmploymentLetterReport,
   getHelloWorldReport,
@@ -23,6 +24,17 @@ export class BasicReportsService extends PrismaClient implements OnModuleInit {
     await this.$connect();
     this.logger.log('Database connected');
   }
+
+  hello() {
+    const docDefinition = getHelloWorldReport({
+      name: 'Francisco Myers',
+    });
+
+    const doc = this.printerService.createPdf(docDefinition);
+
+    return doc;
+  }
+
   async reports() {
     const docDefinition = getHelloWorldReport({ name: 'Francisco Myers' });
 
@@ -57,6 +69,21 @@ export class BasicReportsService extends PrismaClient implements OnModuleInit {
     });
 
     const doc = this.printerService.createPdf(docDefinition);
+    return doc;
+  }
+
+  async getCountryReport() {
+    const countries = await this.countries.findMany({
+      where: {
+        local_name: {
+          not: null,
+        },
+      },
+    });
+    const docDefinition = getCountriesReport({ countries });
+
+    const doc = this.printerService.createPdf(docDefinition);
+
     return doc;
   }
 }
