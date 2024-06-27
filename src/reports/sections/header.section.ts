@@ -1,5 +1,6 @@
 import { Content } from 'pdfmake/interfaces';
 import { DateFormatter } from 'src/helpers';
+import { HeaderOptions } from 'src/interfaces';
 
 const logo: Content = {
   image: 'src/assets/tucan-code-logo.png',
@@ -9,24 +10,51 @@ const logo: Content = {
   margin: [0, 0, 0, 20],
 };
 
-const date: Content = {
+const currentDate: Content = {
   text: DateFormatter.getDDMMMMYYYY(new Date()),
   alignment: 'right',
-  margin: [20, 20],
+  margin: [20, 30],
+  width: 150,
 };
 
-interface HeaderOptions {
-  title?: string;
-  sibTitle?: string;
-  showLogo?: boolean;
-  showDate?: boolean;
-}
-
 export const headerSection = (options: HeaderOptions): Content => {
-  const { showDate = true, showLogo = true, sibTitle, title } = options;
+  const { showDate = true, showLogo = true, subTitle, title } = options;
   const headerLogo: Content = showLogo ? logo : null;
-  const headerDate: Content = showDate ? date : null;
+  const headerDate: Content = showDate ? currentDate : null;
+
+  const headerSubTitle: Content = subTitle
+    ? {
+        stack: [
+          {
+            text: subTitle,
+            alignment: 'center',
+            margin: [0, 2, 0, 0],
+            style: {
+              bold: true,
+              fontSize: 16,
+            },
+          },
+        ],
+      }
+    : null;
+
+  const headerTitle: Content = title
+    ? {
+        stack: [
+          {
+            text: title,
+            alignment: 'center',
+            margin: [0, 15, 0, 0],
+            style: {
+              bold: true,
+              fontSize: 22,
+            },
+          },
+          headerSubTitle,
+        ],
+      }
+    : null;
   return {
-    columns: [headerLogo, headerDate],
+    columns: [headerLogo, headerTitle, headerDate],
   };
 };
